@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#120f07">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Задание Сильвен</title>
+<style>
+@font-face {
+  font-family: 'Carmen';
+  src: url('Carmen.ttf') format('truetype');
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #120f07;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100dvh;
+  height: 100vh;
+  overflow: hidden;
+  background: #120f07;
+  color: #ede4cc;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+/* ЗАГРУЗКА */
+#loading {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #120f07;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.7s ease;
+}
+.ring {
+  width: 52px; height: 52px;
+  border: 2px solid #3d2a08;
+  border-top-color: #c9a84c;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.ltxt {
+  font-family: 'Carmen', Georgia, serif;
+  color: #c9a84c;
+  font-size: 0.9rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+
+/* КАРТИНКА */
+#img-wrap {
+  flex: 0 0 42%;
+  position: relative;
+  overflow: hidden;
+  background: #0a0804;
+}
+#scene-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  transition: opacity 0.5s ease;
+}
+#img-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 70px;
+  background: linear-gradient(transparent, #181309);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ПРОГРЕСС */
+#prog {
+  flex: 0 0 4px;
+  background: #1a1208;
+}
+#prog-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(to right, #5a3e10, #c9a84c);
+  transition: width 0.6s ease;
+}
+
+/* ТЕКСТОВАЯ ЗОНА */
+#scroll {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  background: #181309;
+  padding: 20px 22px 120px;
+}
+#scroll::-webkit-scrollbar { width: 2px; }
+#scroll::-webkit-scrollbar-thumb { background: #5a3e10; border-radius: 2px; }
+
+/* ШАПКА С НОМЕРОМ */
+.hdr {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.hl {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #5a3e10);
+}
+.hl.r { background: linear-gradient(to left, transparent, #5a3e10); }
+#snum {
+  font-family: 'Carmen', Georgia, serif;
+  font-size: 0.72rem;
+  color: #7a5a18;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ТЕКСТ */
+#story {
+  font-size: 1.1rem;
+  line-height: 1.85;
+  color: #ede4cc;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ФОРМА СЛАЙД 5 */
+#form5 {
+  margin-top: 6px;
+}
+.flbl {
+  display: block;
+  font-family: 'Carmen', Georgia, serif;
+  font-size: 0.76rem;
+  color: #c9a84c;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 24px 0 12px;
+}
+.rgrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.rbtn {
+  background: transparent;
+  border: 1px solid #3d2a08;
+  color: #7a6840;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  padding: 13px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.rbtn.on {
+  background: rgba(90, 62, 16, 0.4);
+  border-color: #c9a84c;
+  color: #f0dc9a;
+}
+#ninp {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #3d2a08;
+  color: #ede4cc;
+  font-family: Georgia, serif;
+  font-size: 1.05rem;
+  padding: 12px 4px;
+  outline: none;
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+#ninp::placeholder { color: #4a3820; font-style: italic; }
+#ninp:focus { border-bottom-color: #c9a84c; }
+
+/* ФИНАЛ */
+#final {
+  text-align: center;
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid #3d2a08;
+}
+.fstar {
+  display: block;
+  font-size: 2.5rem;
+  color: #c9a84c;
+  margin-bottom: 16px;
+  animation: glow 2.5s ease-in-out infinite alternate;
+}
+.ftxt {
+  font-family: 'Carmen', Georgia, serif;
+  font-size: 0.8rem;
+  color: #7a5a18;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+@keyframes glow {
+  from { text-shadow: 0 0 8px #3d2a08; }
+  to   { text-shadow: 0 0 22px #c9a84c, 0 0 44px rgba(201,168,76,0.25); }
+}
+
+/* КНОПКА */
+#bwrap {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  padding: 8px 20px 32px;
+  background: linear-gradient(to bottom, transparent 0%, #120f07 45%);
+  z-index: 50;
+}
+#btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 17px 20px;
+  background: linear-gradient(135deg, #6a4c12 0%, #c9a84c 55%, #edd98a 100%);
+  color: #0d0a04;
+  font-family: 'Carmen', Georgia, serif;
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: opacity 0.2s, transform 0.15s;
+}
+#btn:disabled { opacity: 0.25; pointer-events: none; }
+#btn:active { transform: scale(0.975); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+.fu { animation: fadeUp 0.4s ease forwards; }
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="ring"></div>
+  <span class="ltxt">Ривенделл ждёт…</span>
+</div>
+
+<div id="app" style="visibility:hidden">
+  <div id="img-wrap">
+    <img id="scene-img" src="" alt="" style="opacity:0">
+  </div>
+  <div id="prog"><div id="prog-bar"></div></div>
+  <div id="scroll">
+    <div class="hdr">
+      <div class="hl"></div>
+      <span id="snum">1 / 21</span>
+      <div class="hl r"></div>
+    </div>
+    <div id="story"></div>
+    <div id="form5" style="display:none">
+      <span class="flbl">Выберите расу</span>
+      <div class="rgrid">
+        <button class="rbtn" data-r="Человек">Человек</button>
+        <button class="rbtn" data-r="Эльф">Эльф</button>
+        <button class="rbtn" data-r="Хоббит">Хоббит</button>
+        <button class="rbtn" data-r="Гном">Гном</button>
+      </div>
+      <span class="flbl">Ваше имя</span>
+      <input id="ninp" type="text" placeholder="Введите имя персонажа…"
+             maxlength="30" autocomplete="off" spellcheck="false"
+             autocorrect="off" autocapitalize="words">
+    </div>
+    <div id="final" style="display:none">
+      <span class="fstar">✦</span>
+      <p class="ftxt">Конец истории</p>
+    </div>
+  </div>
+</div>
+
+<div id="bwrap" style="display:none">
+  <button id="btn" disabled>
+    <span>Продолжить</span><span>→</span>
+  </button>
+</div>
+
+<script>
+const SL=[
+  {id:1,type:"button",next:2},{id:2,type:"button",next:3},
+  {id:3,type:"button",next:4},{id:4,type:"button",next:5},
+  {id:5,type:"choose",next:6},{id:6,type:"button",next:7},
+  {id:7,type:"button",next:8},{id:8,type:"button",next:9},
+  {id:9,type:"button",next:10},{id:10,type:"button",next:11},
+  {id:11,type:"qr",next:12},{id:12,type:"button",next:13},
+  {id:13,type:"qr",next:14},{id:14,type:"button",next:15},
+  {id:15,type:"qr",next:16},{id:16,type:"button",next:17},
+  {id:17,type:"qr",next:18},{id:18,type:"button",next:19},
+  {id:19,type:"qr",next:20},{id:20,type:"button",next:21},
+  {id:21,type:"end",next:null}
+];
+
+const TX={
+1:`В Ривенделле была весна, когда вы попали туда в очередной раз. Эльфы, прекрасные, высокородные создания, оказали радушный прием: вас и ваших спутников приняли как дорогих гостей. Пир, данный по поводу вашего прихода, был шумным и веселым. Столы ломились от экзотических яств, а беседа за столом была веселой и непринужденной.`,
+2:`Однако через несколько часов вам стало скучно сидеть в зале приемов. Пока окружающие были заняты разговорами, вы тихонько поднялись со своего места и вышли в залитый звездным светом сад.
+
+Был поздний вечер, теплый ветер чуть заметно колыхал кроны деревьев. Птицы, скрытые в листве, негромко пели свои вечерние песни. Вы подошли к ближайшей скамье и опустились на нее, любуясь простой красотой вечернего сада, как вдруг откуда-то из-за дерева вы услышали тихий голос:
+
+— Добрый вечер.`,
+3:`Подняв голову, вы увидели красивую молодую эльфийку. Одета она была в легкую, струящуюся тунику, ее распущенные волосы звездного цвета струились по плечам. Голос у женщины был тихий и нежный, похожий на мелодичные переливы арфы. Выглядела она лет на двадцать, однако вы достаточно хорошо знали, что молодость эльфов может быть обманчива. И все же что-то в ее облике — то ли манера держать себя, то ли живое, постоянно меняющее выражение лицо — говорило, что перед вами действительно совсем молодая девушка.
+
+Она вышла из-за дерева, и, слегка склонив голову в приветственном поклоне, сказала:
+
+— Вы не будете против, если я потревожу ваше одиночество?`,
+4:`Вы уже не первый раз бывали в Ривенделле, и неплохо знали эльфов, однако эта женщина была вам не знакома. Впрочем, настроение у вас было великолепное, так что вы жестом предложили ей присесть рядом. Едва опустившись на скамью, она поинтересовалась:
+
+— Я правильно понимаю, что вы из той группы путников, что пришли в Ривенделл сегодня около полудня? Я видела вас на пиру в честь прибытия путешественников. И простите пожалуйста мою неучтивость… Кажется я забыла представиться. Меня зовут Сильвен. Мой дядюшка устраивает пиршества в честь путников, которые приходят издалека — сегодня вы имели честь оценить его гостеприимство. А кем являетесь вы?`,
+5:`Сильвен вопросительно посмотрела на вас, ожидая ответа.`,
+6:`Выслушав вас, эльфийка приветливо улыбнулась.
+
+— Приятно познакомиться, {name}! Вижу что вы проделали длинный путь, прежде чем попасть в Ривенделл. Надеюсь, наша обитель покажется вам приветливой. Скажите, а давно ли вы путешествуете? Откуда идете, и куда держите путь?
+
+Вам показалось, что девушке было бы интересно услышать истории из большого мира. Вы в подробностях рассказали о своем путешествии, рассказав о посещении больших городов и о местах, которые вы увидели по дороге. После этого вы рассказали и о других приключениях, в которых вам удалось побывать.`,
+7:`Эльфийка с неподдельным интересом слушала вас. Когда вы закончили рассказ, женщина сказала:
+
+— Вижу, что вы опытный путешественник! Скажите, а было бы вам интересно принять участие в еще одном приключении? Воспринимайте его как развлечение: по сравнению с вашими прошлыми путешествиями оно мелкое и незначительное. Однако мне показалось, что оно может вас заинтересовать.`,
+8:`Предложение Сильвен показалось вам любопытным. Ваше путешествие было дальним и заканчивалось в Ривенделле. Вы являлись частью группы путников, которые сопровождали путешественников из одной части Средиземья в другую, и в обратный путь вы должны были отправиться только через несколько месяцев. Мысль о том, что все это время придется скучать без дела, опротивела вам. Не задумываясь, вы поинтересовались у Сильвен, что именно она предлагает.`,
+9:`Ваша заинтересованность порадовала эльфийку.
+
+— Я попрошу вас доставить посылку моему знакомому, который живет в другом городе. Это не далеко, однако сама я не могу отправиться в путешествие — мой дядюшка категорически против того, чтобы я куда либо уезжала из обители. Однако прежде чем передать вам посылку и адрес, я бы хотела немного поиграть с вами в загадки — вы же не имеете ничего против?`,
+10:`Предложение девушки показалось вам странным, но все же вы решили сыграть с эльфийкой в ее игру. Сильвен удовлетворенно кивнула, и сказала:
+
+— Я загадаю вам несколько простых загадок, в них будут описаны места или предметы, которые вам нужно будет найти, все они будут связаны с предстоящим путешествием. Они помогут вам продвинуться дальше. В конце я передам вам посылку и адрес, куда нужно будет отправиться. Если вам нужна будет помощь — спрашивайте, я с радостью вам помогу. Ну что же, начнем?`,
+11:`Девушка выпрямилась на скамье, и загадала первую свою загадку.
+
+— Любое путешествие, пусть даже короткое, может быть опасным. Конечно, меч и кинжал могут помочь в неприятностях, однако магия будет надежнее. Моя первая загадка: найти источник магии, он должен быть где-то не далеко.`,
+12:`Источником магии оказалась книга — вы нашли ее после того, как сделали круг по саду. Книга лежала на подставке в виде раскрытых крыльев филина. Вы не могли прочитать ни слова на незнакомом языке, однако судя по замысловатым рисункам, внутри говорилось именно о волшебстве. Кроме того, вы не раз слышали поговорку, что знания — это истинная магия.`,
+13:`Сильвен терпеливо ожидала, пока вы найдете отгадку, и довольно кивнула головой, когда вы сказали ответ.
+
+— Как видите, мои загадки не так уж и сложны. Уверяю вас, остальные будут не сложнее — у меня нет цели запутать вас. Раз вы так быстро справились с первым заданием, давайте не будем тянуть со вторым. В путешествие нельзя отправляться в одиночестве — вы, опытный путешественник, знаете это как никто другой! Даже на короткую прогулку в соседний город лучше отправляться в сопровождении опытных проводников. Моя вторая загадка: найти компанию для вашего будущего путешествия. Где-то тут, недалеко, находятся две феи. Они маленькие, однако будут великолепными компаньонами в путешествии.`,
+14:`Найти фей оказалось сложнее, чем отыскать источник магии, однако вы справились и с этой задачей. Феи оказались действительно крошечными, вы заметили их только по мягкому сиянию в густой траве. Как ни странно, поймать их оказалось не сложно: крошки, переглянувшись, сами сели вам на руку, будто готовые к путешествию.`,
+15:`Сильвен внимательно наблюдала за вашими поисками, и когда вы вернулись к ней, она продолжила:
+
+— Думаю вы поладите с ними. Феи хорошие спутники, они могут помочь найти дорогу, если путешественник собьется с пути. Что еще нужно в путешествии? Само собой, надежное снаряжение. Часть пути может пройти через горы, так что вы должны быть готовы к этому. Мое третье задание: найти что-то, что поможет вам успешно пройти через горный перевал. Вы опытный путешественник, так что думаю с этим проблем не должно возникнуть.`,
+16:`Действительно, вопрос со снаряжением решился достаточно быстро, благо путников разместили недалеко от дома Сильвен. Войдя в отведенную вам комнату, вы собрали в дорожный мешок свои вещи, а также горное снаряжение: вы часто ходили через Мглистые горы, так что у вас уже были подбитые шипами ботинки, веревка с крюками, а также крепкий посох.`,
+17:`Сильвен оценила ваше снаряжение.
+
+— Отлично, сразу видно, что у вас есть опыт в длительных походах! Однако для путешествия нужны не только веревки да посох, но и съестные припасы. Мое четвертое задание: найти что-то, чем вы будете питаться в дороге. Это должно быть что-то прочное, но в то же время легкое; что-то, что вы сможете легко унести.`,
+18:`Опустив свой дорожный мешок на землю, вы достали оттуда завернутые в зеленые листья хлебцы. Это была ваша основная пища во время длительных переходов: легкие, сытные, эти хлебцы были идеальной пищей во время переходов.`,
+19:`Казалось, что ваша находка несколько изумила Сильвен.
+
+— У вас есть путевой хлеб? Подумать только! Хотя чему мне удивляться, караванщики часто используют его во время длительных переходов. Согласитесь, они идеально подходят для путешествий! Ну, думаю, вы готовы к дальнейшему пути. Хотя нет, погодите… Мне кажется, с этим мешком вам будет не удобно. Надо бы найти для вас что-то более удобное, куда можно было бы сложить все вещи… Попробуйте найти что-то более подходящее, а я тем временем подготовлю посылку.`,
+20:`Котомка, которую вы нашли, действительно оказалась намного удобнее заплечного мешка, с которым вы обычно путешествовали. Когда вы вернулись в сад, Сильвен уже ожидала вас, держа в руках большую книгу. Девушка убрала ее в украшенный узорами шелковый мешок, и передала его вам.
+
+— Я прошу вас отнести эту книгу в Шир. Там, в стране хоббитов, живет мой старинный знакомый. Думаю вы без труда найдете его там — спросите у жителей Шира о господине Холмогоре, он достаточно известен среди хоббитов. Это подарок ему на именины, так что постарайтесь добраться до страны хоббитов к середине июня. Надеюсь, это приключение не доставит вам хлопот!`,
+21:`С этими словами Сильвен встала со скамьи, и, слегка поклонившись вам, направилась в темную часть сада. Вы же, немного посидев, принялись собираться в дорогу. Путешествие действительно предстояло не слишком длинным, однако чтобы попасть в Шир к назначенной дате, вам следовало бы поторопиться. Вы решили вернуться на пир, а утром отправиться в путь.`
+};
+
+let cur=1, pname='';
+
+function go(n){
+  const s=SL.find(x=>x.id===n);
+  if(!s)return;
+  cur=n;
+  history.replaceState(null,'','#slide'+n);
+
+  document.getElementById('prog-bar').style.width=((n-1)/20*100)+'%';
+  document.getElementById('snum').textContent=n+' / 21';
+  document.getElementById('scroll').scrollTop=0;
+
+  // картинка
+  const img=document.getElementById('scene-img');
+  img.style.opacity='0';
+  const newImg=new Image();
+  newImg.onload=()=>{img.src='scene'+String(n).padStart(2,'0')+'.jpg';img.style.opacity='1';};
+  newImg.src='scene'+String(n).padStart(2,'0')+'.jpg';
+
+  // текст
+  let tx=TX[n]||'';
+  if(pname)tx=tx.replace(/{name}/g,pname);
+  const el=document.getElementById('story');
+  el.classList.remove('fu');
+  el.textContent=tx;
+  void el.offsetWidth;
+  el.classList.add('fu');
+
+  // форма
+  document.getElementById('form5').style.display=s.type==='choose'?'block':'none';
+  if(s.type==='choose'){
+    document.querySelectorAll('.rbtn').forEach(b=>b.classList.remove('on'));
+    document.getElementById('ninp').value='';
+    chk();
+  }
+
+  // финал
+  document.getElementById('final').style.display=s.type==='end'?'block':'none';
+
+  // кнопка
+  const bw=document.getElementById('bwrap');
+  const bt=document.getElementById('btn');
+  if(s.type==='end'||s.type==='qr'){
+    bw.style.display='none';
+  } else {
+    bw.style.display='block';
+    bt.disabled=(s.type==='choose');
+  }
+}
+
+function chk(){
+  const r=!!document.querySelector('.rbtn.on');
+  const nm=document.getElementById('ninp').value.trim();
+  document.getElementById('btn').disabled=!(r&&nm.length>0);
+}
+
+document.querySelectorAll('.rbtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.rbtn').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); chk();
+  });
+});
+document.getElementById('ninp').addEventListener('input',chk);
+document.getElementById('btn').addEventListener('click',()=>{
+  const s=SL.find(x=>x.id===cur);
+  if(!s||!s.next)return;
+  if(cur===5){
+    pname=document.getElementById('ninp').value.trim();
+    try{localStorage.setItem('qn',pname);}catch(e){}
+  }
+  go(s.next);
+});
+
+// СТАРТ
+(function(){
+  let start=1;
+  const h=window.location.hash;
+  if(h&&h.startsWith('#slide')){
+    const n=parseInt(h.replace('#slide',''),10);
+    if(n>=1&&n<=21){pname=localStorage.getItem('qn')||'';start=n;}
+  }
+  go(start);
+  document.getElementById('app').style.visibility='visible';
+  const ld=document.getElementById('loading');
+  ld.style.opacity='0';
+  setTimeout(()=>{ld.style.display='none';},700);
+})();
+</script>
+</body>
+</html>
